@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StreamNext: Share Your Story with the World – Upload, Stream, Inspire!</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    color: #02153c;
+    padding: 20px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  body.dark-mode {
+    background-color: #100d0d;
+    color: #f9f9f9;
+  }
+  .header, .nav, .video-container {
+    margin-bottom: 20px;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h1 {
+    font-size: 24px;
+  }
+  .header input {
+    flex-grow: 1;
+    margin: 0 10px;
+    padding: 8px;
+    border: 1px solid #0d0909;
+    border-radius: 4px;
+  }
+  .header button {
+    padding: 8px 16px;
+    background-color: #071627;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .header .mode-toggle {
+    margin-left: 10px;
+    padding: 8px;
+    background-color: #ccc;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .header .mode-toggle.dark-mode {
+    background-color: #000000;
+    color: #f9f9f9;
+  }
+  .nav ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+  }
+  .nav ul li {
+    margin-right: 10px;
+  }
+  .nav ul li a {
+    color: #555;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav ul li a:hover {
+    color: #000;
+  }
+  body.dark-mode .nav ul li a {
+    color: #aaa;
+  }
+  body.dark-mode .nav ul li a:hover {
+    color: #fff;
+  }
+  .video-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .video-item {
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  .video-item img {
+    width: 100%;
+    border-radius: 4px;
+  }
+  .video-item h2 {
+    font-size: 18px;
+    margin: 10px 0 5px;
+  }
+  .video-item p {
+    color: #666;
+  }
+  .video-item span {
+    color: #999;
+  }
+  body.dark-mode .video-item {
+    background-color: #0e0123;
+    border-color: #555;
+  }
+  body.dark-mode .video-item p, body.dark-mode .video-item span {
+    color: #ccc;
+  }
+  .play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    display: none;
+  }
+  .video-item:hover .play-button {
+    display: block;
+  }
+  .modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>StreamNext</h1>
+    <input type="text" id="searchInput" placeholder="Search" />
+    <button onclick="searchVideos()">Search</button>
+    <button class="mode-toggle" onclick="toggleMode()">Light Mode</button>
+  </div>
+
+  <nav class="nav">
+    <ul>
+      <li><a href="#">All</a></li>
+      <li><a href="#">News</a></li>
+      <li><a href="#">Music</a></li>
+      <li><a href="#">Live</a></li>
+      <li><a href="#">Bjp</a></li>
+      <li><a href="#">Music</a></li>
+      <li><a href="#">Hello</a></li>
+      <li><a href="#">T-Series</a></li>
+    </ul>
+  </nav>
+
+  <main class="video-container" id="videoContainer">
+  
+  </main>
+
+  <div id="videoModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <video id="modalVideo" width="100%" controls>
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+
+<script>
+  const videos = [
+      { title: "Menufy", views: "515K views", time: "4 months ago", duration: "1:37:19", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/tf-YyK4qTpqmILvHInIrZQ", videoUrl: "link_to_video_1" },
+      { title: "Breaking News: BJP में बड़ी टूट !", views: "97K views", time: "1 hour ago", duration: "32:14", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/9WPUAV1vRziAsFCRwta0Vw", videoUrl: "link_to_video_2" },
+      { title: "Bjp Vs IndiaAlliance", views: "2.7K watching", time: "", duration: "LIVE", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/uIAoVJI0QGW_8nqUcWMcZw", videoUrl: "link_to_video_3" },
+      { title: "Roast by harsh Gurjal to Bassi", views: "101K views", time: "9 months ago", duration: "9:28:50", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/QGth9a8sS3GPR_I7y46Irw", videoUrl: "link_to_video_4" },
+      { title: "My Mix", views: "Kalpana Patowary, Pawan Singh, Suresh Raja, and more", time: "", duration: "Mix", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/JfZv2Yw4ROiRqS34aLlovQ", videoUrl: "link_to_video_5" },
+      { title: "Menufy", views: "Kalpana Patowary, Pawan Singh, Suresh Raja, and more", time: "", duration: "Mix", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/TdoGz8Q_SZ-CqiKB2p0d5A", videoUrl: "link_to_video_6" }
+      ,{ title: "Silent Speak", views: "Kalpana Patowary, Pawan Singh, Suresh Raja, and more", time: "", duration: "Mix", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/sLcTaiOhQqW3dvm7HDZ8fA", videoUrl: "link_to_video_7" }
+      ,{ title: "Harsh vs Bassi", views: "Kalpana Patowary, Pawan Singh, Suresh Raja, and more", time: "", duration: "Mix", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/MHRubwvCSMKvqXVr-ZuMgQ", videoUrl: "link_to_video_8" }
+      ,{ title: "Fun Zone", views: "Kalpana Patowary, Pawan Singh, Suresh Raja, and more", time: "", duration: "Mix", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/EJxKTwRrTvWa_0uWWMcY_g", videoUrl: "link_to_video_9" }
+      ,{ title: "ASMR relaxing", views: "Kalpana Patowary, Pawan Singh, Suresh Raja, and more", time: "", duration: "Mix", thumbnail: "https://ideogram.ai/assets/progressive-image/balanced/response/JfZv2Yw4ROiRqS34aLlovQ", videoUrl: "link_to_video_10" }
+  ];
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const videoContainer = document.getElementById("videoContainer");
+    videos.forEach(video => {
+      const videoItem = document.createElement("div");
+      videoItem.className = "video-item";
+      videoItem.innerHTML = `
+        <img src="${video.thumbnail}" alt="${video.title}">
+        <button class="play-button" onclick="playVideo('${video.videoUrl}')">▶</button>
+        <h2>${video.title}</h2>
+        <p>${video.views}</p>
+        <span>${video.time}</span>
+      `;
+      videoContainer.appendChild(videoItem);
+    });
+  });
+
+  function playVideo(videoUrl) {
+    const modalVideo = document.getElementById("modalVideo");
+    modalVideo.src = videoUrl;
+    openModal();
+  }
+
+  function openModal() {
+    const modal = document.getElementById("videoModal");
+    modal.style.display = "flex";
+  }
+
+  function closeModal() {
+    const modal = document.getElementById("videoModal");
+    modal.style.display = "none";
+    const modalVideo = document.getElementById("modalVideo");
+    modalVideo.pause();
+    modalVideo.src = "";
+  }
+
+  function toggleMode() {
+    document.body.classList.toggle("dark-mode");
+    const modeToggleBtn = document.querySelector(".mode-toggle");
+    modeToggleBtn.textContent = document.body.classList.contains("dark-mode") ? "Light Mode" : "Dark Mode";
+    modeToggleBtn.classList.toggle("dark-mode");
+  }
+
+  function searchVideos() {
+    const searchInput = document.getElementById("searchInput").value.toLowerCase();
+    const videoItems = document.querySelectorAll(".video-item");
+    videoItems.forEach(item => {
+      const title = item.querySelector("h2").textContent.toLowerCase();
+      if (title.includes(searchInput)) {
+        item.style.display = "";
+      } else {
+        item.style.display = "none";
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
